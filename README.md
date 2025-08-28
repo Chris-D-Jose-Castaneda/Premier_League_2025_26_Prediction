@@ -4,5 +4,4 @@ Data was scraped from various sources
 
 25 csv files. 
 
-figure out the relevancd
-
+figure out the relevancy and features 
