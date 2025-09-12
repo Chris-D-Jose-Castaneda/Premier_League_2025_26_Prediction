@@ -17,5 +17,5 @@ figure out the relevancy and features
 7) tm_market_summer.py
 8) odds.py
 
-
+Predictions for MD4 -> Liverpool still in 1st
 Best model: 
