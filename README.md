@@ -7,7 +7,7 @@ Data was scraped from various sources
 figure out the relevancy and features 
 
 
-## Order of Running
+## Order of Running Scraping
 1) Scraper.py
 2) premier_league_25_26_schedule.py
 3) match_statistics.py
