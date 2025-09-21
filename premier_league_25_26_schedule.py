@@ -1,50 +1,34 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
-premier_league_25_26_schedule.py
+PL 2025/26 results merger (button-driven navigation + skip-when-filled).
 
-End-to-end builder for the 2025/26 Premier League dataset.
-
-Phase A (fixtures):
-  - Loads the official PL article (Selenium) and parses all 380 fixtures
-  - Robust Matchweek (md) assignment (uses headers when present; otherwise auto-chunks in 10s)
-  - Repairs md using NBC’s "Matchweek X" sections if the PL article is inconsistent
-  - Writes CSV with: date (YYYY-MM-DD), home, away, md
-
-Phase B (results):
-  - Scrapes the official /matches pages per matchweek (Selenium, client-rendered)
-  - Uses a month hint derived from fixture dates (adds &month=MM)
-  - Merges any finished results into the CSV by (md, home, away)
-  - Adds columns (and only these): FTHG, FTAG, FTR, played, status, ResultStr
-  - (No Date_actual column)
+Fixes:
+  - Avoids ValueError when a game's score is NaN (unfinished).
+  - Only navigates to matchweeks that still need results AND should have started
+    (min scheduled date <= today). Prevents endless back-clicking once MW1–4 are saved.
 
 Usage:
-  python premier_league_25_26_schedule.py --out fixtures_2025_26.csv
-  # options:
-  #   --results-from 1 --results-to 38
-  #   --no-results
-  #   --sleep-min 0.8 --sleep-max 2.2
-  #   --no-headless  (watch the browser)
-
-Requires:
-  pip install selenium webdriver-manager beautifulsoup4 pandas requests
+  python premier_league_25_26_schedule.py --csv fixtures_2025_26.csv --from-md 1 --to-md 38
+  # optional:
+  #   --no-headless  --sleep-min 0.8 --sleep-max 2.0
 """
 
 from __future__ import annotations
 
 import argparse
-import calendar
+import os
 import random
 import re
+import sys
 import time
-from datetime import datetime
-from typing import Dict, Optional
+from datetime import date, datetime
+from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
-import requests
 from bs4 import BeautifulSoup
 
-# --- Selenium setup -----------------------------------------------------------
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FFOptions
 from selenium.webdriver.firefox.service import Service as FFService
@@ -53,21 +37,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC  # noqa: N813
 from webdriver_manager.firefox import GeckoDriverManager
 
+# ----------------------------- Config ---------------------------------
 
-# -----------------------------------------------------------------------------#
-# Constants
-# -----------------------------------------------------------------------------#
+SEASON_QS = "competition=8&season=2025"
+SEED_URLS = [
+    f"https://www.premierleague.com/en/matches?{SEASON_QS}&matchweek=5&month=09",  # stable render
+    f"https://www.premierleague.com/en/matches?{SEASON_QS}&matchweek=2&month=09",
+    f"https://www.premierleague.com/en/matches?{SEASON_QS}",
+    "https://www.premierleague.com/en/matches",
+]
 
-PL_FIXTURES_URL = "https://www.premierleague.com/en/news/4324539/all-380-fixtures-for-202526-premier-league-season"
-NBC_FIXTURES_URL = "https://www.nbcsports.com/soccer/news/premier-league-2025-26-fixtures-released-dates-schedule-how-to-watch-live"
-PL_MATCHES_URL_TMPL = "https://www.premierleague.com/en/matches?competition=8&season=2025&matchweek={mw}"  # we'll append &month=MM
+SCORE_RE = re.compile(r"^\s*(\d+)\s*[-–]\s*(\d+)\s*$")
 
-SEASON_START_YEAR = 2025
-SEASON_END_YEAR = 2026
-
-# Team normalization
 TEAM_ALIASES: Dict[str, str] = {
-    # short → canonical
     "Man United": "Manchester United",
     "Man Utd": "Manchester United",
     "Man City": "Manchester City",
@@ -77,7 +59,6 @@ TEAM_ALIASES: Dict[str, str] = {
     "Nott'm": "Nottingham Forest",
     "Wolves": "Wolverhampton Wanderers",
     "West Ham": "West Ham United",
-    "West Brom": "West Bromwich Albion",
     "Brighton": "Brighton and Hove Albion",
     "Brighton & Hove Albion": "Brighton and Hove Albion",
     "Newcastle": "Newcastle United",
@@ -86,7 +67,7 @@ TEAM_ALIASES: Dict[str, str] = {
     "Bournemouth": "AFC Bournemouth",
     "Liverpool FC": "Liverpool",
     "Tottenham Hotspur Hotspur": "Tottenham Hotspur",
-    # idempotent
+    # identities
     "Arsenal": "Arsenal",
     "Aston Villa": "Aston Villa",
     "AFC Bournemouth": "AFC Bournemouth",
@@ -107,7 +88,7 @@ TEAM_ALIASES: Dict[str, str] = {
     "West Ham United": "West Ham United",
     "Wolverhampton Wanderers": "Wolverhampton Wanderers",
 }
-WEB_ALIAS: Dict[str, str] = {
+WEB_ALIAS = {
     "Liverpool FC": "Liverpool",
     "Brighton & Hove Albion": "Brighton and Hove Albion",
     "Newcastle Utd": "Newcastle United",
@@ -123,23 +104,13 @@ def normalize_team(name: str) -> str:
     return TEAM_ALIASES.get(s, s)
 
 
-def month_to_year(month_name: str) -> int:
-    m = month_name.lower()
-    if m in {"august", "september", "october", "november", "december"}:
-        return SEASON_START_YEAR
-    return SEASON_END_YEAR
+# ----------------------------- Selenium ---------------------------------
 
-
-# -----------------------------------------------------------------------------#
-# Selenium helpers
-# -----------------------------------------------------------------------------#
-
-
-def make_driver(headless: bool = True, timeout: int = 30) -> webdriver.Firefox:
-    """Create a tuned Firefox driver."""
+def make_driver(headless: bool, timeout: int = 35) -> webdriver.Firefox:
     opts = FFOptions()
     opts.headless = headless
-    opts.set_preference("permissions.default.image", 2)  # faster: don't download images
+    # faster: limit heavy assets
+    opts.set_preference("permissions.default.image", 2)
     opts.set_preference("dom.ipc.processCount", 1)
     service = FFService(GeckoDriverManager().install())
     driver = webdriver.Firefox(service=service, options=opts)
@@ -147,428 +118,310 @@ def make_driver(headless: bool = True, timeout: int = 30) -> webdriver.Firefox:
     return driver
 
 
-def polite_sleep(smin: float, smax: float) -> None:
-    """Randomized sleep to be polite."""
-    time.sleep(random.uniform(max(0.0, smin), max(smin, smax)))
+def snooze(a: float, b: float) -> None:
+    time.sleep(random.uniform(max(0.0, a), max(a, b)))
 
 
-def fetch_html_with_selenium(
-    url: str,
-    *,
-    headless: bool = True,
-    timeout: int = 30,
-    sleep_min: float = 0.8,
-    sleep_max: float = 2.2,
-    waiter: Optional[tuple] = None,
-) -> str:
-    """
-    Generic Selenium fetcher. If `waiter` is provided, it must be a tuple:
-      (by, selector) that will be waited for presence.
-    """
-    driver = make_driver(headless=headless, timeout=timeout)
-    try:
-        driver.get(url)
-        polite_sleep(sleep_min, sleep_max)
-        # Try cookie accept buttons (best-effort)
-        for sel in ("button[aria-label*='Accept']", "button[aria-label*='accept']", "button[title*='Accept']"):
-            try:
-                WebDriverWait(driver, 4).until(EC.element_to_be_clickable((By.CSS_SELECTOR, sel))).click()
-                break
-            except Exception:
-                pass
-        if waiter:
-            WebDriverWait(driver, timeout).until(EC.presence_of_element_located(waiter))
-        html = driver.page_source
-        return html
-    finally:
-        driver.quit()
-
-
-# -----------------------------------------------------------------------------#
-# Phase A — FIXTURES from PL article (+ NBC fallback)
-# -----------------------------------------------------------------------------#
-
-# Regexes for fixtures parsing
-RE_MW_HEADER = re.compile(r"\bmatchweek\s*(\d+)\b", re.IGNORECASE)
-RE_MW_PREFIX = re.compile(r"\bmw\s*(\d+)\b", re.IGNORECASE)
-RE_DATE_LINE = re.compile(
-    r"^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+(\d{1,2})\s+([A-Za-z]+)(?:\s+(\d{4}))?$",
-    re.IGNORECASE,
-)
-RE_FIX = re.compile(r"^(?:\d{1,2}:\d{2}\s*(?:GMT)?\s*)?(.+?)\s+v\s+(.+?)(?:\s*\(.*\))?\s*$", re.IGNORECASE)
-RE_FIX_NBC_V = re.compile(r"(?::\s*)?(.+?)\s+v\s+(.+?)\s*(?:—|$)", re.IGNORECASE)
-RE_FIX_NBC_RES = re.compile(r"(.+?)\s+(\d+)\-(\d+)\s+(.+?)\s*(?:—|$)", re.IGNORECASE)
-
-
-def _lines_from_p(p) -> list[str]:
-    for br in p.find_all("br"):
-        br.replace_with("\n")
-    t = p.get_text("\n", strip=True)
-    lines = []
-    for ln in t.split("\n"):
-        ln = re.sub(r"\s*\*.*$", "", ln).strip()
-        if ln:
-            lines.append(ln)
-    return lines
-
-
-def parse_pl_article_to_fixtures(html: str) -> pd.DataFrame:
-    soup = BeautifulSoup(html, "html.parser")
-    container = soup.select_one("div.article__content, .js-article__content")
-    if not container:
-        raise RuntimeError("Could not locate article content container")
-
-    rows = []
-    cur_md, md_count, cur_date = None, 0, None
-    for p in container.find_all("p"):
-        for line in _lines_from_p(p):
-            m1 = RE_MW_HEADER.search(line)
-            m2 = RE_MW_PREFIX.search(line)
-            if m1 or m2:
-                cur_md = int((m1 or m2).group(1))
-                md_count = 0
-                # optional date on same line
-                mdt = RE_DATE_LINE.search(line)
-                if mdt:
-                    d, mon, y = int(mdt.group(1)), mdt.group(2), mdt.group(3)
-                    year = int(y) if y else month_to_year(mon)
-                    cur_date = pd.Timestamp(year=year, month=pd.to_datetime(mon, format="%B").month, day=d)
-                continue
-            mdt = RE_DATE_LINE.match(line)
-            if mdt:
-                d, mon, y = int(mdt.group(1)), mdt.group(2), mdt.group(3)
-                year = int(y) if y else month_to_year(mon)
-                cur_date = pd.Timestamp(year=year, month=pd.to_datetime(mon, format="%B").month, day=d)
-                continue
-            fx = RE_FIX.match(line)
-            if fx:
-                if cur_date is None:
-                    continue
-                home = normalize_team(fx.group(1).strip())
-                away = normalize_team(fx.group(2).strip())
-                if cur_md is None:
-                    cur_md, md_count = 1, 0
-                if md_count == 10:
-                    cur_md += 1
-                    md_count = 0
-                rows.append({"date": cur_date.date().isoformat(), "home": home, "away": away, "md": int(cur_md)})
-                md_count += 1
-
-    df = pd.DataFrame(rows)
-    if df.empty:
-        raise RuntimeError("No fixtures parsed; the page layout may have changed.")
-    df["md"] = df["md"].astype(int)
-    return df.sort_values(["md", "date", "home", "away"]).reset_index(drop=True)
-
-
-def parse_nbc_matchweeks(html: str) -> pd.DataFrame:
-    soup = BeautifulSoup(html, "html.parser")
-    body = soup.select_one(".RichTextArticleBody, .RichTextBody")
-    if not body:
-        return pd.DataFrame(columns=["home", "away", "md"])
-
-    out = []
-    cur_md = None
-    for el in body.find_all(["h3", "p"], recursive=True):
-        if el.name == "h3":
-            m = re.search(r"Matchweek\s*(\d+)", el.get_text(" ", strip=True), re.IGNORECASE)
-            if m:
-                cur_md = int(m.group(1))
-            continue
-        if el.name == "p" and cur_md is not None:
-            txt = el.get_text(" ", strip=True)
-            m_res = RE_FIX_NBC_RES.search(txt)
-            if m_res:
-                out.append(
-                    {"home": normalize_team(m_res.group(1).strip()), "away": normalize_team(m_res.group(4).strip()), "md": cur_md}
-                )
-                continue
-            m_v = RE_FIX_NBC_V.search(txt)
-            if m_v:
-                out.append(
-                    {"home": normalize_team(m_v.group(1).strip()), "away": normalize_team(m_v.group(2).strip()), "md": cur_md}
-                )
-    return pd.DataFrame(out).drop_duplicates()
-
-
-def repair_matchweeks_with_nbc(df_pl: pd.DataFrame, df_nbc: pd.DataFrame) -> pd.DataFrame:
-    if df_nbc.empty:
-        return df_pl
-    m = df_pl.merge(df_nbc, on=["home", "away"], how="left", suffixes=("", "_nbc"))
-    need = m["md"].isna() | ((m["md_nbc"].notna()) & (m["md"] != m["md_nbc"]))
-    m.loc[need, "md"] = m.loc[need, "md_nbc"]
-    m = m.drop(columns=["md_nbc"])
-    if m["md"].isna().any():
-        m = m.sort_values(["date", "home", "away"]).reset_index(drop=True)
-        cur = int(m["md"].dropna().min()) if m["md"].notna().any() else 1
-        cnt = 0
-        for i in range(len(m)):
-            if pd.isna(m.at[i, "md"]):
-                if cnt == 10:
-                    cur += 1
-                    cnt = 0
-                m.at[i, "md"] = cur
-                cnt += 1
-            else:
-                cnt = 1 if (i > 0 and m.at[i, "md"] != m.at[i - 1, "md"]) else (cnt + 1 if i > 0 else 1)
-    m["md"] = m["md"].astype(int)
-    return m.sort_values(["md", "date", "home", "away"]).reset_index(drop=True)
-
-
-def build_fixtures_from_sources(headless: bool, sleep_min: float, sleep_max: float) -> pd.DataFrame:
-    # Fetch PL article
-    html_pl = fetch_html_with_selenium(
-        PL_FIXTURES_URL,
-        headless=headless,
-        timeout=30,
-        sleep_min=sleep_min,
-        sleep_max=sleep_max,
-        waiter=(By.CSS_SELECTOR, "div.article__content, .js-article__content"),
-    )
-    df_pl = parse_pl_article_to_fixtures(html_pl)
-
-    # Validate / repair with NBC if needed
-    counts = df_pl.groupby("md").size().reindex(range(1, 39), fill_value=0)
-    needs_repair = ((counts != 10).any()) or (len(df_pl) != 380)
-
-    if needs_repair:
+def accept_cookies_if_present(driver: webdriver.Firefox) -> None:
+    for sel in (
+        "button[aria-label*='Accept']",
+        "button[aria-label*='accept']",
+        "button[title*='Accept']",
+    ):
         try:
-            r = requests.get(NBC_FIXTURES_URL, headers={"User-Agent": "EPL-RF/1.0"}, timeout=25)
-            if r.ok:
-                df_nbc = parse_nbc_matchweeks(r.text)
-                df_pl = repair_matchweeks_with_nbc(df_pl, df_nbc)
+            WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.CSS_SELECTOR, sel))).click()
+            break
         except Exception:
             pass
 
-    # Final sanity print
-    counts_final = df_pl.groupby("md").size().reindex(range(1, 39), fill_value=0)
-    print("Per-matchweek counts (should all be 10):")
-    print(counts_final.to_string())
-    if (counts_final != 10).any():
-        print("[WARN] Some matchweeks still not at 10; check sources or regexes.")
-    if len(df_pl) != 380:
-        print(f"[WARN] Total rows = {len(df_pl)} (expected 380).")
 
-    return df_pl[["date", "home", "away", "md"]].reset_index(drop=True)
-
-
-# -----------------------------------------------------------------------------#
-# Phase B — RESULTS from PL /matches (Selenium + month hint)
-# -----------------------------------------------------------------------------#
-
-SCORE_RE = re.compile(r"^\s*(\d+)\s*-\s*(\d+)\s*$")
-
-
-def md_to_month_hint(fixtures: pd.DataFrame) -> Dict[int, int]:
-    """Derive a month (1..12) hint for each matchweek from scheduled dates."""
-    fx = fixtures.copy()
-    fx["date"] = pd.to_datetime(fx["date"], errors="coerce")
-    s = fx.dropna(subset=["date"]).groupby("md")["date"].min().dt.month
-    return {int(md): int(mon) for md, mon in s.items() if pd.notna(mon)}
-
-
-def matches_url_for_md(md: int, md_month: Dict[int, int]) -> str:
-    base = PL_MATCHES_URL_TMPL.format(mw=md)
-    mon = md_month.get(int(md))
-    return f"{base}&month={mon:02d}" if mon else base
-
-
-def scrape_results_for_md(
-    md: int,
-    *,
-    headless: bool,
-    sleep_min: float,
-    sleep_max: float,
-) -> pd.DataFrame:
-    """
-    Returns: columns [home, away, FTHG, FTAG, status, md]
-    (No Date_actual in this project.)
-    """
-    # Load page with Selenium and wait for client-rendered list
-    # We derive the URL including &month externally
-    # (the caller provides a fully built URL)
-    raise NotImplementedError  # replaced by fetch below
-
-
-def fetch_results_range_with_selenium(
-    md_from: int,
-    md_to: int,
-    fixtures: pd.DataFrame,
-    *,
-    headless: bool,
-    sleep_min: float,
-    sleep_max: float,
-) -> pd.DataFrame:
-    """Fetch finished results for matchweeks in [md_from, md_to]."""
-    md_month = md_to_month_hint(fixtures)
-    driver = make_driver(headless=headless, timeout=30)
-    try:
-        frames = []
-        for md in range(md_from, md_to + 1):
-            url = matches_url_for_md(md, md_month)
+def open_seed(driver: webdriver.Firefox, sleep_min: float, sleep_max: float) -> Optional[BeautifulSoup]:
+    for url in SEED_URLS:
+        try:
             driver.get(url)
-            polite_sleep(sleep_min, sleep_max)
-            # wait for client render
-            try:
-                WebDriverWait(driver, 30).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, "div.match-list div[data-testid='dayContainer']"))
-                )
-            except Exception:
-                continue
-
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-
-            rows = []
-            for card in soup.select("a[data-testid='matchCard']"):
-                h_el = card.select_one(".match-card__team--home [data-testid='matchCardTeamFullName']")
-                a_el = card.select_one(".match-card__team--away [data-testid='matchCardTeamFullName']")
-                if not h_el or not a_el:
-                    continue
-                home = normalize_team(h_el.get_text(strip=True))
-                away = normalize_team(a_el.get_text(strip=True))
-
-                score_el = card.select_one("span[data-testid='matchCardScore']")
-                status_el = card.select_one(".match-card__full-time")
-                status = status_el.get_text(strip=True) if status_el else ""
-
-                FTHG = FTAG = None
-                if score_el:
-                    m = SCORE_RE.match(score_el.get_text(strip=True))
-                    if m:
-                        FTHG, FTAG = int(m.group(1)), int(m.group(2))
-
-                rows.append({"home": home, "away": away, "FTHG": FTHG, "FTAG": FTAG, "status": status, "md": int(md)})
-
-            if rows:
-                frames.append(pd.DataFrame(rows))
-
-            # extra jitter between pages
-            polite_sleep(sleep_min, sleep_max)
-
-        return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
-    finally:
-        driver.quit()
+        except Exception:
+            continue
+        snooze(sleep_min, sleep_max)
+        accept_cookies_if_present(driver)
+        try:
+            WebDriverWait(driver, 25).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.match-list"))
+            )
+            return BeautifulSoup(driver.page_source, "html.parser")
+        except Exception:
+            continue
+    return None
 
 
-def merge_results_into_fixtures(csv_path: str, results_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Merge results by (md, home, away) into the fixtures CSV.
-    Adds/updates only: FTHG, FTAG, FTR, played, status, ResultStr
-    """
-    fx = pd.read_csv(csv_path).copy()
+def read_header_md(soup: BeautifulSoup) -> Optional[int]:
+    hd = soup.select_one(".match-list-header__title")
+    if not hd:
+        return None
+    m = re.search(r"Matchweek\s*(\d+)", hd.get_text(" ", strip=True), re.IGNORECASE)
+    return int(m.group(1)) if m else None
 
-    # Drop any legacy Date_actual column if present (not used here)
-    if "Date_actual" in fx.columns:
-        fx = fx.drop(columns=["Date_actual"])
 
-    # Ensure columns exist
-    for col, default in [
-        ("FTHG", pd.NA),
-        ("FTAG", pd.NA),
-        ("FTR", pd.NA),
-        ("played", False),
-        ("status", ""),
-        ("ResultStr", ""),
-    ]:
-        if col not in fx.columns:
-            fx[col] = default
+def click_nav(driver: webdriver.Firefox, direction: str) -> bool:
+    # prev is left button, next is right button
+    btns = driver.find_elements(By.CSS_SELECTOR, ".match-list-header__button-container .match-list-header__btn")
+    if not btns or len(btns) < 2:
+        return False
+    btn = btns[0] if direction == "prev" else btns[-1]
+    try:
+        driver.execute_script("arguments[0].click();", btn)
+        return True
+    except Exception:
+        try:
+            btn.click()
+            return True
+        except Exception:
+            return False
 
-    fx["home"] = fx["home"].map(normalize_team)
-    fx["away"] = fx["away"].map(normalize_team)
 
-    if results_df.empty:
-        fx.to_csv(csv_path, index=False)
-        return fx
-
-    pl = results_df.copy()
-    pl["home"] = pl["home"].map(normalize_team)
-    pl["away"] = pl["away"].map(normalize_team)
-
-    merged = fx.merge(
-        pl.rename(columns={"FTHG": "FTHG_pl", "FTAG": "FTAG_pl", "status": "status_pl"}),
-        on=["md", "home", "away"],
-        how="left",
+def wait_dom(driver: webdriver.Firefox, sleep_min: float, sleep_max: float) -> None:
+    snooze(sleep_min * 0.6, sleep_max * 0.9)
+    WebDriverWait(driver, 25).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "div.match-list"))
     )
 
-    has_score = merged["FTHG_pl"].notna() & merged["FTAG_pl"].notna()
-    merged.loc[has_score, "FTHG"] = merged.loc[has_score, "FTHG_pl"].astype(int)
-    merged.loc[has_score, "FTAG"] = merged.loc[has_score, "FTAG_pl"].astype(int)
 
-    merged.loc[merged["status_pl"].notna(), "status"] = merged.loc[merged["status_pl"].notna(), "status_pl"]
+def navigate_to_md(driver: webdriver.Firefox, current_md: Optional[int], target_md: int,
+                   sleep_min: float, sleep_max: float) -> Tuple[Optional[BeautifulSoup], Optional[int]]:
+    """Drive the page via Previous/Next until header shows target_md."""
+    limit = 60
+    steps = 0
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    header = current_md if current_md is not None else read_header_md(soup)
 
+    while header != target_md and steps < limit:
+        direction = "prev" if (header is None or header > target_md) else "next"
+        if not click_nav(driver, direction):
+            break
+        wait_dom(driver, sleep_min, sleep_max)
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        header = read_header_md(soup)
+        steps += 1
+
+    return (soup, header)
+
+
+def scrape_current_page(soup: BeautifulSoup, md: int) -> pd.DataFrame:
+    rows = []
+    for card in soup.select("a[data-testid='matchCard']"):
+        h_el = card.select_one(".match-card__team--home [data-testid='matchCardTeamFullName']")
+        a_el = card.select_one(".match-card__team--away [data-testid='matchCardTeamFullName']")
+        if not h_el or not a_el:
+            continue
+        home = normalize_team(h_el.get_text(strip=True))
+        away = normalize_team(a_el.get_text(strip=True))
+
+        score_el = card.select_one("span[data-testid='matchCardScore']")
+        status_el = card.select_one(".match-card__full-time")
+        status = status_el.get_text(strip=True) if status_el else ""
+
+        FTHG = FTAG = None
+        if score_el:
+            m = SCORE_RE.match(score_el.get_text(strip=True))
+            if m:
+                FTHG, FTAG = int(m.group(1)), int(m.group(2))
+
+        rows.append({"md": int(md), "home": home, "away": away, "FTHG": FTHG, "FTAG": FTAG, "status": status})
+    return pd.DataFrame(rows)
+
+
+# ----------------------------- Merge + Plan ---------------------------------
+
+def ensure_result_columns(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    defaults = {
+        "FTHG": pd.NA,
+        "FTAG": pd.NA,
+        "FTR": pd.NA,
+        "played": False,
+        "status": "",
+        "ResultStr": "",
+    }
+    for c, default in defaults.items():
+        if c not in out.columns:
+            out[c] = default
+    return out
+
+
+def compute_outcomes(df: pd.DataFrame) -> pd.DataFrame:
     def _ftr(row):
         if pd.isna(row["FTHG"]) or pd.isna(row["FTAG"]):
             return pd.NA
         return "H" if row["FTHG"] > row["FTAG"] else ("A" if row["FTAG"] > row["FTHG"] else "D")
 
-    merged["FTR"] = merged.apply(_ftr, axis=1)
-    merged["played"] = merged["FTR"].notna()
-    merged["ResultStr"] = merged.apply(
-        lambda r: f"{int(r['FTHG'])}-{int(r['FTAG'])} ({r['FTR']})" if r["played"] else "", axis=1
+    df["FTR"] = df.apply(_ftr, axis=1)
+    df["played"] = df["FTR"].notna()
+    df["ResultStr"] = df.apply(
+        lambda r: f"{int(r['FTHG'])}-{int(r['FTAG'])} ({r['FTR']})" if r["played"] else "",
+        axis=1,
     )
-
-    # Clean helper cols
-    merged = merged.drop(columns=[c for c in ["FTHG_pl", "FTAG_pl", "status_pl"] if c in merged.columns])
-    merged.to_csv(csv_path, index=False)
-    return merged
+    return df
 
 
-# -----------------------------------------------------------------------------#
-# CLI
-# -----------------------------------------------------------------------------#
+def merge_md_results(csv_path: str, md: int, md_df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
+    fx = pd.read_csv(csv_path)
+    fx = ensure_result_columns(fx)
+    fx["home"] = fx["home"].map(normalize_team)
+    fx["away"] = fx["away"].map(normalize_team)
+
+    mask = fx["md"].astype(int) == int(md)
+    if mask.sum() == 0 or md_df.empty:
+        fx.to_csv(csv_path, index=False)
+        return fx, 0
+
+    md_df = md_df.copy()
+    md_df["home"] = md_df["home"].map(normalize_team)
+    md_df["away"] = md_df["away"].map(normalize_team)
+
+    # Map for quick lookups
+    rmap = {(r.home, r.away): r for r in md_df.itertuples(index=False)}
+
+    merged_scores = 0
+    for idx in fx.index[mask]:
+        tup = (fx.at[idx, "home"], fx.at[idx, "away"])
+        r = rmap.get(tup)
+        if not r:
+            continue
+
+        # Only set scores if they exist (avoid NaN->int crash)
+        if pd.notna(r.FTHG) and pd.notna(r.FTAG):
+            fx.at[idx, "FTHG"] = int(r.FTHG)
+            fx.at[idx, "FTAG"] = int(r.FTAG)
+            merged_scores += 1
+
+        # Update status if present
+        if isinstance(r.status, str) and r.status:
+            fx.at[idx, "status"] = r.status
+
+    fx = compute_outcomes(fx)
+    fx.to_csv(csv_path, index=False)
+    return fx, merged_scores
+
+
+def plan_matchweeks_to_fetch(csv_path: str, md_from: int, md_to: int) -> List[int]:
+    """
+    Return the ordered list of MDs that still need results (some FTHG/FTAG missing)
+    and whose min scheduled date is <= today. This stops us from clicking back
+    when earlier weeks are already fully populated.
+    """
+    fx = pd.read_csv(csv_path)
+    fx = ensure_result_columns(fx)
+    fx["md"] = fx["md"].astype(int)
+
+    # Today in local date
+    today = date.today()
+
+    needs: List[int] = []
+    for md in range(md_from, md_to + 1):
+        slice_md = fx.loc[fx["md"] == md]
+        if slice_md.empty:
+            continue
+
+        # Only attempt MDs whose earliest scheduled date has arrived
+        # (so we don't scrape future weeks)
+        try:
+            dmin = pd.to_datetime(slice_md["date"], errors="coerce").min()
+        except Exception:
+            dmin = None
+        if pd.isna(dmin) or dmin.date() > today:
+            continue
+
+        # If ALL 10 have scores, skip
+        if len(slice_md) == 10 and slice_md["FTHG"].notna().all() and slice_md["FTAG"].notna().all():
+            continue
+
+        needs.append(md)
+
+    return needs
+
+
+# ----------------------------- CLI ---------------------------------
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Build PL 2025/26 fixtures (with md) and merge official results.")
-    ap.add_argument("--out", default="fixtures_2025_26.csv", help="Output CSV path.")
-    ap.add_argument("--results-from", type=int, default=1, help="First MW to fetch results for (default 1).")
-    ap.add_argument("--results-to", type=int, default=38, help="Last MW to fetch results for (default 38).")
-    ap.add_argument("--no-results", action="store_true", help="Skip results aggregation.")
-    ap.add_argument("--no-headless", action="store_true", help="Run Selenium with a visible browser.")
-    ap.add_argument("--sleep-min", type=float, default=0.8, help="Min randomized sleep between page ops (sec).")
-    ap.add_argument("--sleep-max", type=float, default=2.2, help="Max randomized sleep between page ops (sec).")
+    ap = argparse.ArgumentParser(description="Merge PL results into fixtures CSV (button navigation, skip when filled).")
+    ap.add_argument("--csv", default="fixtures_2025_26.csv", help="Fixtures CSV with columns: date, home, away, md")
+    ap.add_argument("--from-md", type=int, default=1)
+    ap.add_argument("--to-md", type=int, default=38)
+    ap.add_argument("--sleep-min", type=float, default=0.8)
+    ap.add_argument("--sleep-max", type=float, default=2.0)
+    ap.add_argument("--no-headless", action="store_true")
     args = ap.parse_args()
+
+    if not os.path.exists(args.csv):
+        print(f"[ERROR] CSV not found: {args.csv}", file=sys.stderr)
+        sys.exit(2)
+
+    fx = pd.read_csv(args.csv)
+    need_cols = {"date", "home", "away", "md"}
+    if not need_cols.issubset(fx.columns):
+        print(f"[ERROR] CSV missing {need_cols}. Found: {list(fx.columns)}", file=sys.stderr)
+        sys.exit(2)
+
+    # Ensure result columns exist from the start
+    ensure_result_columns(fx).to_csv(args.csv, index=False)
+
+    md_first = max(1, int(args.from_md))
+    md_last = min(38, int(args.to_md))
+
+    # PLAN: which MDs actually need scraping?
+    target_mds = plan_matchweeks_to_fetch(args.csv, md_first, md_last)
+    if not target_mds:
+        print(f"✔ Nothing to do: all MDs {md_first}–{md_last} that have started are already populated.")
+        return
+
+    print(f"✔ Will scrape MDs: {target_mds}, CSV={args.csv}")
 
     headless = not args.no_headless
     sleep_min = max(0.0, args.sleep_min)
     sleep_max = max(sleep_min, args.sleep_max)
 
-    # Phase A — Fixtures
-    fixtures = build_fixtures_from_sources(headless=headless, sleep_min=sleep_min, sleep_max=sleep_max)
-    fixtures.to_csv(args.out, index=False, encoding="utf-8")
-    print(f"\n✔ Wrote {args.out} with {len(fixtures)} rows")
-
-    counts = fixtures["md"].value_counts().sort_index()
-    print("\nMatch count by MD (should be 10 each):")
-    print(counts.to_string())
-
-    # Phase B — Results
-    if not args.no_results:
-        print("\nFetching official /matches results (Selenium) …")
-        results = fetch_results_range_with_selenium(
-            max(1, args.results_from),
-            min(38, args.results_to),
-            fixtures=fixtures,
-            headless=headless,
-            sleep_min=sleep_min,
-            sleep_max=sleep_max,
-        )
-        print(f"  - scraped {len(results)} rows from /matches")
-        updated = merge_results_into_fixtures(args.out, results)
-        played = int(updated["played"].sum())
-        print(f"✔ Results merged: {played} matches marked played.")
-        if played:
-            print("\nFinished per MD:")
-            print(updated.loc[updated["played"]].groupby("md").size().to_string())
-
-    # Preview
-    print("\nPreview (first 12):")
-    cols = ["date", "md", "home", "away", "FTHG", "FTAG", "FTR", "played", "status", "ResultStr"]
+    driver = make_driver(headless=headless)
     try:
-        df_show = pd.read_csv(args.out)
-        cols = [c for c in cols if c in df_show.columns]
-        print(df_show[cols].head(12).to_string(index=False))
-    except Exception:
-        print(fixtures.head(12).to_string(index=False))
+        # 1) Load seed page once
+        soup = open_seed(driver, sleep_min, sleep_max)
+        if not soup:
+            print("[ERROR] Could not load any seed page.", file=sys.stderr)
+            sys.exit(3)
+        current = read_header_md(soup)
+        print(f"Seed header reads Matchweek {current}")
+
+        # 2) Visit ONLY the planned MDs, in ascending order (minimal back clicks)
+        for md in target_mds:
+            print(f"\n[MD {md}] current header={current}")
+            soup, current = navigate_to_md(driver, current, md, sleep_min, sleep_max)
+            if current != md:
+                print(f"  ! Could not land on MW{md} header (got {current}); parsing anyway…")
+
+            df_md = scrape_current_page(soup, md)
+            updated_df, merged_scores = merge_md_results(args.csv, md, df_md)
+
+            md_slice = updated_df.loc[updated_df["md"].astype(int) == md]
+            played = int(md_slice["played"].sum()) if not md_slice.empty else 0
+            print(f"  - merged rows with scores: {merged_scores}")
+            print(f"  - played now in MD {md}: {played} / {len(md_slice)}")
+
+            snooze(sleep_min, sleep_max)
+
+        final = pd.read_csv(args.csv)
+        total_played = int(final["played"].sum())
+        print(f"\n✔ Done. Total played: {total_played}/{len(final)}")
+        per = final.loc[final["played"]].groupby("md").size()
+        if not per.empty:
+            print("Per-MD finished:")
+            print(per.to_string())
+
+        # Quick preview
+        cols = ["date", "md", "home", "away", "FTHG", "FTAG", "FTR", "played", "status", "ResultStr"]
+        cols = [c for c in cols if c in final.columns]
+        print("\nPreview (first 12):")
+        print(final[cols].head(12).to_string(index=False))
+
+    finally:
+        driver.quit()
 
 
 if __name__ == "__main__":

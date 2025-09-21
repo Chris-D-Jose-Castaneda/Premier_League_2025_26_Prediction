@@ -8,7 +8,7 @@ Arsenal FCArray,Christian Nørgaard,In,31,Defensive Midfield,€11.00m,Left,Bren
 Arsenal FCArray,Kepa Arrizabalaga,In,30,Goalkeeper,€10.00m,Left,Chelsea FC,€5.80m
 Arsenal FCArray,Piero Hincapié,In,23,Centre-Back,€50.00m,Left,Bayer 04 Leverkusen,loan transfer
 Arsenal FCArray,Fábio Vieira,In,25,Attacking Midfield,€22.00m,Left,FC Porto,"End of loan Jun 30, 2025"
-Arsenal FCArray,Max Dowman,In,15,Attacking Midfield,-,Left,Arsenal FC U18,-
+Arsenal FCArray,Max Dowman,In,15,Right Winger,-,Left,Arsenal FC U18,-
 Arsenal FCArray,Marquinhos,In,22,Right Winger,€5.50m,Left,Cruzeiro Esporte Clube,"End of loan Jun 30, 2025"
 Arsenal FCArray,Reiss Nelson,In,25,Left Winger,€16.00m,Left,Fulham FC,"End of loan Jun 30, 2025"
 Arsenal FCArray,Karl Hein,In,23,Goalkeeper,€3.00m,Left,Real Valladolid CF,"End of loan Jun 30, 2025"
@@ -75,7 +75,7 @@ AFC BournemouthArray,Ben Winterburn,In,20,Defensive Midfield,€500k,Left,AFC Bo
 AFC BournemouthArray,Joe Rothwell,In,30,Central Midfield,€1.80m,Left,Leeds United,"End of loan Jun 30, 2025"
 AFC BournemouthArray,Alex Paulsen,In,22,Goalkeeper,€750k,Left,Auckland FC,"End of loan Jun 30, 2025"
 AFC BournemouthArray,Ben Winterburn,In,21,Defensive Midfield,€500k,Left,Barnet FC,"End of loan May 31, 2026"
-AFC BournemouthArray,Romain Faivre,In,26,Right Midfield,€6.00m,Left,Stade Brestois 29,"End of loan Jun 30, 2025"
+AFC BournemouthArray,Romain Faivre,In,26,Attacking Midfield,€6.00m,Left,Stade Brestois 29,"End of loan Jun 30, 2025"
 AFC BournemouthArray,Hamed Traoré,In,25,Left Winger,€20.00m,Left,AJ Auxerre,"End of loan Jun 30, 2025"
 AFC BournemouthArray,Jaidon Anthony,In,25,Left Winger,€9.00m,Left,Burnley FC,"End of loan Jun 30, 2025"
 AFC BournemouthArray,Neto,In,35,Goalkeeper,€1.50m,Left,Arsenal FC,"End of loan Jun 30, 2025"
@@ -93,7 +93,7 @@ AFC BournemouthArray,Luis Sinisterra,Out,26,Left Winger,€15.00m,Joined,Cruzeir
 AFC BournemouthArray,Chris Mepham,Out,27,Centre-Back,€6.00m,Joined,West Bromwich Albion,€1.15m
 AFC BournemouthArray,Joe Rothwell,Out,30,Central Midfield,€1.80m,Joined,Rangers FC,€460k
 AFC BournemouthArray,Neto,Out,36,Goalkeeper,€1.50m,Joined,Botafogo de Futebol e Regatas,free transfer
-AFC BournemouthArray,Romain Faivre,Out,27,Right Midfield,€6.00m,Joined,Al-Taawoun FC,loan transfer
+AFC BournemouthArray,Romain Faivre,Out,27,Attacking Midfield,€6.00m,Joined,Al-Taawoun FC,loan transfer
 AFC BournemouthArray,Alex Paulsen,Out,23,Goalkeeper,€750k,Joined,Lechia Gdansk,loan transfer
 AFC BournemouthArray,Hamed Traoré,Out,25,Left Winger,€20.00m,Joined,Olympique Marseille,loan transfer
 AFC BournemouthArray,Max Aarons,Out,25,Right-Back,€6.00m,Joined,Rangers FC,loan transfer
@@ -219,29 +219,29 @@ Burnley FCArray,Bashir Humphreys,Out,22,Left-Back,€7.00m,Joined,Chelsea FC,"En
 Chelsea FCArray,João Pedro,In,23,Centre-Forward,€50.00m,Left,Brighton & Hove Albion,€63.70m
 Chelsea FCArray,Jamie Gittens,In,20,Left Winger,€50.00m,Left,Borussia Dortmund,€56.00m
 Chelsea FCArray,Alejandro Garnacho,In,21,Left Winger,€45.00m,Left,Manchester United,€46.20m
+Chelsea FCArray,Estêvão,In,18,Right Winger,€60.00m,Left,Sociedade Esportiva Palmeiras,€45.00m
 Chelsea FCArray,Jorrel Hato,In,19,Left-Back,€35.00m,Left,Ajax Amsterdam,€44.18m
 Chelsea FCArray,Liam Delap,In,22,Centre-Forward,€40.00m,Left,Ipswich Town,€35.50m
-Chelsea FCArray,Estêvão,In,18,Right Winger,€60.00m,Left,Sociedade Esportiva Palmeiras,€34.00m
 Chelsea FCArray,Dário Essugo,In,20,Defensive Midfield,€20.00m,Left,Sporting CP,€22.27m
 Chelsea FCArray,Mamadou Sarr,In,19,Centre-Back,€20.00m,Left,RC Strasbourg Alsace,€14.00m
 Chelsea FCArray,Kendry Páez,In,18,Attacking Midfield,€10.00m,Left,Independiente del Valle,€10.00m
 Chelsea FCArray,Facundo Buonanotte,In,20,Attacking Midfield,€20.00m,Left,Brighton & Hove Albion,Loan fee: €2.30m
 Chelsea FCArray,João Félix,In,25,Second Striker,€20.00m,Left,AC Milan,"End of loan Jun 30, 2025"
-Chelsea FCArray,Bashir Humphreys,In,22,Left-Back,€7.00m,Left,Burnley FC,"End of loan Jun 30, 2025"
-Chelsea FCArray,Armando Broja,In,23,Centre-Forward,€12.00m,Left,Everton FC,"End of loan Jun 30, 2025"
-Chelsea FCArray,Lesley Ugochukwu,In,21,Defensive Midfield,€18.00m,Left,Southampton FC,"End of loan Jun 30, 2025"
-Chelsea FCArray,Marc Guiu,In,19,Centre-Forward,€8.00m,Left,Sunderland AFC,"End of loan Sep 1, 2025"
-Chelsea FCArray,Alfie Gilchrist,In,21,Right-Back,€8.00m,Left,Sheffield United,"End of loan Jun 30, 2025"
+Chelsea FCArray,Carney Chukwuemeka,In,21,Central Midfield,€18.00m,Left,Borussia Dortmund,"End of loan Jul 6, 2025"
 Chelsea FCArray,Mike Penders,In,19,Goalkeeper,€10.00m,Left,KRC Genk,"End of loan Jun 1, 2025"
 Chelsea FCArray,Kepa Arrizabalaga,In,30,Goalkeeper,€10.00m,Left,AFC Bournemouth,"End of loan Jun 30, 2025"
 Chelsea FCArray,Djordje Petrovic,In,25,Goalkeeper,€20.00m,Left,RC Strasbourg Alsace,"End of loan Jun 30, 2025"
+Chelsea FCArray,Marc Guiu,In,19,Centre-Forward,€8.00m,Left,Sunderland AFC,"End of loan Sep 1, 2025"
 Chelsea FCArray,Raheem Sterling,In,30,Right Winger,€10.00m,Left,Arsenal FC,"End of loan Jun 30, 2025"
+Chelsea FCArray,Armando Broja,In,23,Centre-Forward,€12.00m,Left,Everton FC,"End of loan Jun 30, 2025"
 Chelsea FCArray,Caleb Wiley,In,21,Left-Back,€8.00m,Left,Watford FC,"End of loan May 31, 2026"
-Chelsea FCArray,Carney Chukwuemeka,In,21,Central Midfield,€18.00m,Left,Borussia Dortmund,"End of loan Jul 6, 2025"
 Chelsea FCArray,Ben Chilwell,In,28,Left-Back,€15.00m,Left,Crystal Palace,"End of loan Jun 30, 2025"
 Chelsea FCArray,Axel Disasi,In,27,Centre-Back,€22.00m,Left,Aston Villa,"End of loan Jun 30, 2025"
 Chelsea FCArray,Deivid Washington,In,20,Centre-Forward,€8.00m,Left,Santos FC,"End of loan Sep 1, 2025"
 Chelsea FCArray,Renato Veiga,In,21,Centre-Back,€18.00m,Left,Juventus FC,"End of loan Jun 10, 2025"
+Chelsea FCArray,Bashir Humphreys,In,22,Left-Back,€7.00m,Left,Burnley FC,"End of loan Jun 30, 2025"
+Chelsea FCArray,Lesley Ugochukwu,In,21,Defensive Midfield,€18.00m,Left,Southampton FC,"End of loan Jun 30, 2025"
+Chelsea FCArray,Alfie Gilchrist,In,21,Right-Back,€8.00m,Left,Sheffield United,"End of loan Jun 30, 2025"
 Chelsea FCArray,Noni Madueke,Out,23,Right Winger,€40.00m,Joined,Arsenal FC,€56.00m
 Chelsea FCArray,Christopher Nkunku,Out,27,Centre-Forward,€35.00m,Joined,AC Milan,€37.00m
 Chelsea FCArray,João Félix,Out,25,Second Striker,€20.00m,Joined,Al-Nassr FC,€30.00m
@@ -257,40 +257,42 @@ Chelsea FCArray,Bashir Humphreys,Out,22,Left-Back,€7.00m,Joined,Burnley FC,€
 Chelsea FCArray,Kepa Arrizabalaga,Out,30,Goalkeeper,€10.00m,Joined,Arsenal FC,€5.80m
 Chelsea FCArray,Marcus Bettinelli,Out,33,Goalkeeper,€600k,Joined,Manchester City,€2.40m
 Chelsea FCArray,Alfie Gilchrist,Out,21,Right-Back,€8.00m,Joined,West Bromwich Albion,€2.30m
-Chelsea FCArray,Ben Chilwell,Out,28,Left-Back,€15.00m,Joined,RC Strasbourg Alsace,free transfer
 Chelsea FCArray,Lucas Bergström,Out,22,Goalkeeper,€700k,Joined,RCD Mallorca,free transfer
-Chelsea FCArray,Mike Penders,Out,19,Goalkeeper,€12.00m,Joined,RC Strasbourg Alsace,loan transfer
+Chelsea FCArray,Ben Chilwell,Out,28,Left-Back,€15.00m,Joined,RC Strasbourg Alsace,free transfer
+Chelsea FCArray,David Datro Fofana,Out,22,Centre-Forward,€6.00m,Joined,Fatih Karagümrük,loan transfer
 Chelsea FCArray,Marc Guiu,Out,19,Centre-Forward,€8.00m,Joined,Sunderland AFC,loan transfer
 Chelsea FCArray,Mamadou Sarr,Out,19,Centre-Back,€20.00m,Joined,RC Strasbourg Alsace,loan transfer
 Chelsea FCArray,Kendry Páez,Out,18,Attacking Midfield,€10.00m,Joined,RC Strasbourg Alsace,loan transfer
+Chelsea FCArray,Mike Penders,Out,19,Goalkeeper,€12.00m,Joined,RC Strasbourg Alsace,loan transfer
 Chelsea FCArray,Aarón Anselmino,Out,20,Centre-Back,€8.00m,Joined,Borussia Dortmund,loan transfer
 Chelsea FCArray,Jadon Sancho,Out,25,Left Winger,€28.00m,Joined,Manchester United,"End of loan Jun 30, 2025"
 Crystal PalaceArray,Yéremy Pino,In,22,Right Winger,€30.00m,Left,Villarreal CF,€30.00m
 Crystal PalaceArray,Jaydee Canvot,In,19,Centre-Back,€4.00m,Left,FC Toulouse,€23.00m
 Crystal PalaceArray,Borna Sosa,In,27,Left-Back,€4.50m,Left,Ajax Amsterdam,€2.30m
 Crystal PalaceArray,Walter Benítez,In,32,Goalkeeper,€7.50m,Left,PSV Eindhoven,free transfer
+Crystal PalaceArray,Hindolo Mustapha,In,18,Attacking Midfield,-,Left,Crystal Palace U21,-
 Crystal PalaceArray,Kaden Rodney,In,19,Defensive Midfield,€200k,Left,Crystal Palace U21,-
 Crystal PalaceArray,Rio Cardines,In,19,Left-Back,-,Left,Crystal Palace U21,-
-Crystal PalaceArray,Hindolo Mustapha,In,18,Attacking Midfield,-,Left,Crystal Palace U21,-
 Crystal PalaceArray,Christantus Uche,In,22,Centre-Forward,€15.00m,Left,Getafe CF,loan transfer
-Crystal PalaceArray,David Ozoh,In,21,Defensive Midfield,€700k,Left,Derby County,"End of loan May 31, 2026"
 Crystal PalaceArray,Joe Whitworth,In,22,Goalkeeper,€1.70m,Left,Exeter City,"End of loan May 31, 2026"
+Crystal PalaceArray,Jesurun Rak-Sakyi,In,22,Right Winger,€6.00m,Left,Sheffield United,"End of loan Jun 30, 2025"
+Crystal PalaceArray,David Ozoh,In,21,Defensive Midfield,€700k,Left,Derby County,"End of loan May 31, 2026"
 Crystal PalaceArray,Jeffrey Schlupp,In,32,Left Midfield,€3.00m,Left,Celtic FC,"End of loan Jun 30, 2025"
 Crystal PalaceArray,Rob Holding,In,29,Centre-Back,€3.50m,Left,Sheffield United,"End of loan Jun 30, 2025"
 Crystal PalaceArray,Luke Plange,In,22,Centre-Forward,€500k,Left,Motherwell FC,"End of loan Jun 30, 2025"
 Crystal PalaceArray,Odsonne Édouard,In,27,Centre-Forward,€8.00m,Left,Leicester City,"End of loan Jun 30, 2025"
 Crystal PalaceArray,Naouirou Ahamada,In,23,Central Midfield,€3.50m,Left,Stade Rennais FC,"End of loan Jun 30, 2025"
-Crystal PalaceArray,Jesurun Rak-Sakyi,In,22,Right Winger,€6.00m,Left,Sheffield United,"End of loan Jun 30, 2025"
 Crystal PalaceArray,Eberechi Eze,Out,27,Attacking Midfield,€55.00m,Joined,Arsenal FC,€69.30m
 Crystal PalaceArray,Odsonne Édouard,Out,27,Centre-Forward,€8.00m,Joined,RC Lens,€3.70m
 Crystal PalaceArray,Rob Holding,Out,29,Centre-Back,€3.50m,Joined,Colorado Rapids,free transfer
 Crystal PalaceArray,Jeffrey Schlupp,Out,32,Left Midfield,€3.00m,Joined,Norwich City,free transfer
 Crystal PalaceArray,Luke Plange,Out,22,Centre-Forward,€500k,Joined,Grasshopper Club Zurich,free transfer
 Crystal PalaceArray,Malcolm Ebiowei,Out,21,Right Winger,€1.20m,Joined,Blackpool FC,?
-Crystal PalaceArray,Joe Whitworth,Out,21,Goalkeeper,€1.70m,Joined,Exeter City,loan transfer
-Crystal PalaceArray,Hindolo Mustapha,Out,19,Attacking Midfield,-,Joined,1.FC Nuremberg,loan transfer
 Crystal PalaceArray,David Ozoh,Out,20,Defensive Midfield,€700k,Joined,Derby County,loan transfer
+Crystal PalaceArray,Jesurun Rak-Sakyi,Out,22,Right Winger,€6.00m,Joined,Caykur Rizespor,loan transfer
 Crystal PalaceArray,Matheus França,Out,21,Attacking Midfield,€10.00m,Joined,Clube de Regatas Vasco da Gama,loan transfer
+Crystal PalaceArray,Hindolo Mustapha,Out,19,Attacking Midfield,-,Joined,1.FC Nuremberg,loan transfer
+Crystal PalaceArray,Joe Whitworth,Out,21,Goalkeeper,€1.70m,Joined,Exeter City,loan transfer
 Crystal PalaceArray,Joel Ward,Out,35,Right-Back,€500k,Joined,Without Club,-
 Crystal PalaceArray,Ben Chilwell,Out,28,Left-Back,€15.00m,Joined,Chelsea FC,"End of loan Jun 30, 2025"
 Crystal PalaceArray,Matt Turner,Out,31,Goalkeeper,€2.50m,Joined,Nottingham Forest,"End of loan Jun 30, 2025"
@@ -436,27 +438,24 @@ Manchester UnitedArray,Bryan Mbeumo,In,25,Right Winger,€55.00m,Left,Brentford 
 Manchester UnitedArray,Matheus Cunha,In,26,Second Striker,€60.00m,Left,Wolverhampton Wanderers,€74.20m
 Manchester UnitedArray,Senne Lammens,In,23,Goalkeeper,€9.00m,Left,Royal Antwerp FC,€21.00m
 Manchester UnitedArray,Diego León,In,18,Left-Back,€4.00m,Left,Club Cerro Porteño,€4.00m
-Manchester UnitedArray,Chido Obi,In,17,Centre-Forward,€5.00m,Left,Manchester United U18,-
 Manchester UnitedArray,Tyler Fredricson,In,20,Centre-Back,€3.00m,Left,Manchester United U21,-
+Manchester UnitedArray,Chido Obi,In,17,Centre-Forward,€5.00m,Left,Manchester United U18,-
 Manchester UnitedArray,Jadon Sancho,In,25,Left Winger,€28.00m,Left,Chelsea FC,"End of loan Jun 30, 2025"
-Manchester UnitedArray,Antony,In,25,Right Winger,€35.00m,Left,Real Betis Balompié,"End of loan Jun 30, 2025"
-Manchester UnitedArray,Marcus Rashford,In,27,Left Winger,€50.00m,Left,Aston Villa,"End of loan Jun 30, 2025"
 Manchester UnitedArray,Tyrell Malacia,In,25,Left-Back,€8.00m,Left,PSV Eindhoven,"End of loan Jun 30, 2025"
-Manchester UnitedArray,Ethan Wheatley,In,20,Centre-Forward,-,Left,Northampton Town,"End of loan May 31, 2026"
-Manchester UnitedArray,Daniel Gore,In,21,Central Midfield,€800k,Left,Rotherham United,"End of loan May 31, 2026"
+Manchester UnitedArray,Marcus Rashford,In,27,Left Winger,€50.00m,Left,Aston Villa,"End of loan Jun 30, 2025"
+Manchester UnitedArray,Antony,In,25,Right Winger,€35.00m,Left,Real Betis Balompié,"End of loan Jun 30, 2025"
 Manchester UnitedArray,Alejandro Garnacho,Out,21,Left Winger,€45.00m,Joined,Chelsea FC,€46.20m
 Manchester UnitedArray,Antony,Out,25,Right Winger,€35.00m,Joined,Real Betis Balompié,€22.00m
 Manchester UnitedArray,Rasmus Højlund,Out,22,Centre-Forward,€35.00m,Joined,SSC Napoli,Loan fee: €6.00m
 Manchester UnitedArray,Victor Lindelöf,Out,31,Centre-Back,€8.00m,Joined,Aston Villa,free transfer
+Manchester UnitedArray,André Onana,Out,29,Goalkeeper,€25.00m,Joined,Trabzonspor,loan transfer
 Manchester UnitedArray,Marcus Rashford,Out,27,Left Winger,€50.00m,Joined,FC Barcelona,loan transfer
-Manchester UnitedArray,Ethan Wheatley,Out,19,Centre-Forward,-,Joined,Northampton Town,loan transfer
 Manchester UnitedArray,Jadon Sancho,Out,25,Left Winger,€28.00m,Joined,Aston Villa,loan transfer
 Manchester UnitedArray,Harry Amass,Out,18,Left-Back,€5.00m,Joined,Sheffield Wednesday,loan transfer
 Manchester UnitedArray,Toby Collyer,Out,21,Defensive Midfield,€5.00m,Joined,West Bromwich Albion,loan transfer
-Manchester UnitedArray,Jonny Evans,Out,37,Centre-Back,€1.00m,Joined,Retired,-
 Manchester UnitedArray,Christian Eriksen,Out,33,Attacking Midfield,€4.00m,Joined,Without Club,-
-Manchester UnitedArray,Daniel Gore,Out,20,Central Midfield,€800k,Joined,Rotherham United,loan transfer
-Newcastle UnitedArray,Nick Woltemade,In,23,Second Striker,€30.00m,Left,VfB Stuttgart,€85.00m
+Manchester UnitedArray,Jonny Evans,Out,37,Centre-Back,€1.00m,Joined,Retired,-
+Newcastle UnitedArray,Nick Woltemade,In,23,Second Striker,€30.00m,Left,VfB Stuttgart,€75.00m
 Newcastle UnitedArray,Anthony Elanga,In,23,Right Winger,€42.00m,Left,Nottingham Forest,€61.40m
 Newcastle UnitedArray,Yoane Wissa,In,28,Centre-Forward,€32.00m,Left,Brentford FC,€57.70m
 Newcastle UnitedArray,Jacob Ramsey,In,24,Central Midfield,€32.00m,Left,Aston Villa,€45.15m
@@ -493,13 +492,13 @@ Nottingham ForestArray,Douglas Luiz,In,27,Central Midfield,€30.00m,Left,Juvent
 Nottingham ForestArray,Angus Gunn,In,29,Goalkeeper,€2.20m,Left,Norwich City,free transfer
 Nottingham ForestArray,Oleksandr Zinchenko,In,28,Left-Back,€20.00m,Left,Arsenal FC,loan transfer
 Nottingham ForestArray,Zach Abbott,In,19,Centre-Back,€300k,Left,Nottingham Forest U21,-
-Nottingham ForestArray,Matt Turner,In,31,Goalkeeper,€2.50m,Left,Crystal Palace,"End of loan Jun 30, 2025"
 Nottingham ForestArray,Andrew Omobamidele,In,23,Centre-Back,€8.00m,Left,RC Strasbourg Alsace,"End of loan Jun 30, 2025"
-Nottingham ForestArray,David Carmo,In,25,Centre-Back,€10.00m,Left,Olympiacos Piraeus,"End of loan Jun 30, 2025"
+Nottingham ForestArray,Matt Turner,In,31,Goalkeeper,€2.50m,Left,Crystal Palace,"End of loan Jun 30, 2025"
 Nottingham ForestArray,Tyler Bindon,In,20,Centre-Back,€1.20m,Left,Reading FC,"End of loan Jun 30, 2025"
+Nottingham ForestArray,David Carmo,In,25,Centre-Back,€10.00m,Left,Olympiacos Piraeus,"End of loan Jun 30, 2025"
 Nottingham ForestArray,Omar Richards,In,27,Left-Back,€2.50m,Left,Rio Ave FC,"End of loan Jun 30, 2025"
-Nottingham ForestArray,Jonathan Panzo,In,24,Centre-Back,€1.20m,Left,Rio Ave FC,"End of loan Jun 30, 2025"
 Nottingham ForestArray,Marko Stamenic,In,23,Central Midfield,€3.00m,Left,Olympiacos Piraeus,"End of loan Jun 30, 2025"
+Nottingham ForestArray,Jonathan Panzo,In,24,Centre-Back,€1.20m,Left,Rio Ave FC,"End of loan Jun 30, 2025"
 Nottingham ForestArray,Anthony Elanga,Out,23,Right Winger,€42.00m,Joined,Newcastle United,€61.40m
 Nottingham ForestArray,Danilo,Out,24,Defensive Midfield,€28.00m,Joined,Botafogo de Futebol e Regatas,€23.00m
 Nottingham ForestArray,Ramón Sosa,Out,25,Left Winger,€12.00m,Joined,Sociedade Esportiva Palmeiras,€12.50m
@@ -507,9 +506,10 @@ Nottingham ForestArray,Andrew Omobamidele,Out,23,Centre-Back,€8.00m,Joined,RC 
 Nottingham ForestArray,Matt Turner,Out,31,Goalkeeper,€2.50m,Joined,Olympique Lyon,€8.00m
 Nottingham ForestArray,Carlos Miguel,Out,26,Goalkeeper,€4.00m,Joined,Sociedade Esportiva Palmeiras,€5.50m
 Nottingham ForestArray,Lewis O'Brien,Out,26,Central Midfield,€4.00m,Joined,Wrexham AFC,€3.50m
-Nottingham ForestArray,Jonathan Panzo,Out,24,Centre-Back,€1.20m,Joined,Rio Ave FC,free transfer
-Nottingham ForestArray,Josh Bowler,Out,26,Right Winger,€1.00m,Joined,Blackpool FC,free transfer
+Nottingham ForestArray,Jota Silva,Out,26,Right Winger,€15.00m,Joined,Besiktas JK,Loan fee: €2.50m
 Nottingham ForestArray,Harry Toffolo,Out,29,Left-Back,€3.00m,Joined,Charlotte FC,free transfer
+Nottingham ForestArray,Josh Bowler,Out,26,Right Winger,€1.00m,Joined,Blackpool FC,free transfer
+Nottingham ForestArray,Jonathan Panzo,Out,24,Centre-Back,€1.20m,Joined,Rio Ave FC,free transfer
 Nottingham ForestArray,Cuiabano,Out,22,Left-Back,€8.00m,Joined,Botafogo de Futebol e Regatas,loan transfer
 Nottingham ForestArray,Marko Stamenic,Out,23,Central Midfield,€3.00m,Joined,Swansea City,?
 Nottingham ForestArray,Tyler Bindon,Out,20,Centre-Back,€1.20m,Joined,Sheffield United,loan transfer
@@ -609,7 +609,7 @@ West Ham UnitedArray,Junior Robinson,In,22,Right-Back,-,Left,Livingston FC,"End 
 West Ham UnitedArray,Maxwel Cornet,In,28,Left Winger,€8.00m,Left,Genoa CFC,"End of loan Jun 30, 2025"
 West Ham UnitedArray,Kurt Zouma,In,30,Centre-Back,€10.00m,Left,Al-Orobah FC,"End of loan Jun 30, 2025"
 West Ham UnitedArray,Nayef Aguerd,In,29,Centre-Back,€18.00m,Left,Real Sociedad,"End of loan Jun 30, 2025"
-West Ham UnitedArray,Mohamadou Kanté,In,19,Central Midfield,€200k,Left,Paris FC,"End of loan Jun 30, 2025"
+West Ham UnitedArray,Mohamadou Kanté,In,19,Defensive Midfield,€200k,Left,Paris FC,"End of loan Jun 30, 2025"
 West Ham UnitedArray,Mohammed Kudus,Out,24,Right Winger,€45.00m,Joined,Tottenham Hotspur,€63.80m
 West Ham UnitedArray,Nayef Aguerd,Out,29,Centre-Back,€18.00m,Joined,Olympique Marseille,€23.00m
 West Ham UnitedArray,Edson Álvarez,Out,27,Defensive Midfield,€25.00m,Joined,Fenerbahce,Loan fee: €2.00m
@@ -621,7 +621,7 @@ West Ham UnitedArray,Kurt Zouma,Out,30,Centre-Back,€10.00m,Joined,CFR Cluj,fre
 West Ham UnitedArray,Wes Foderingham,Out,34,Goalkeeper,€600k,Joined,Aris Limassol,free transfer
 West Ham UnitedArray,Kaelan Casey,Out,20,Centre-Back,€1.00m,Joined,Swansea City,loan transfer
 West Ham UnitedArray,Maxwel Cornet,Out,28,Left Winger,€8.00m,Joined,Genoa CFC,loan transfer
-West Ham UnitedArray,Michail Antonio,Out,35,Centre-Forward,€700k,Joined,Without Club,-
+West Ham UnitedArray,Michail Antonio,Out,35,Centre-Forward,€700k,Joined,West Ham United U21,-
 West Ham UnitedArray,Lukasz Fabianski,Out,40,Goalkeeper,€500k,Joined,Without Club,-
 West Ham UnitedArray,Junior Robinson,Out,21,Right-Back,-,Joined,Livingston FC,loan transfer
 West Ham UnitedArray,Jean-Clair Todibo,Out,25,Centre-Back,€25.00m,Joined,OGC Nice,"End of loan Jun 30, 2025"

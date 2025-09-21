@@ -1,41 +1,41 @@
 metric,rank,player,team_name,value
-p_goals,1,Erling Haaland,Man City,3.0
-p_goals,2,Chris Wood,Nott'm Forest,2.0
-p_goals,2,Hugo Ekitiké,Liverpool,2.0
-p_goals,2,Igor Thiago,Brentford,2.0
-p_goals,2,João Pedro,Chelsea,2.0
-p_goals,2,Enzo Fernández,Chelsea,2.0
-p_goals,2,Jurriën Timber,Arsenal,2.0
-p_goals,2,Jaidon Anthony,Burnley,2.0
-p_goals,2,Iliman Ndiaye,Everton,2.0
-p_goals,2,Antoine Semenyo,Bournemouth,2.0
+p_goals,1,Erling Haaland,Man City,5.0
+p_goals,2,Hugo Ekitiké,Liverpool,3.0
+p_goals,2,Jaidon Anthony,Burnley,3.0
+p_goals,2,Antoine Semenyo,Bournemouth,3.0
+p_goals,2,Viktor Gyökeres,Arsenal,3.0
+p_goals,2,Richarlison,Tottenham,3.0
+p_goals,7,Chris Wood,Nott'm Forest,2.0
+p_goals,7,Igor Thiago,Brentford,2.0
+p_goals,7,Moisés Caicedo,Chelsea,2.0
+p_goals,7,Martín Zubimendi,Arsenal,2.0
 p_assists,1,Jack Grealish,Everton,4.0
-p_assists,2,El Hadji Malick Diouf,West Ham,2.0
-p_assists,2,João Pedro,Chelsea,2.0
-p_assists,2,Riccardo Calafiori,Arsenal,2.0
-p_assists,2,Mohammed Kudus,Tottenham,2.0
-p_assists,2,Cody Gakpo,Liverpool,2.0
-p_assists,7,Granit Xhaka,Sunderland,1.0
-p_assists,7,Estêvão,Chelsea,1.0
-p_assists,7,Chemsdine Talbi,Sunderland,1.0
-p_assists,7,Hugo Ekitiké,Liverpool,1.0
-p_totalPasses,1,Elliot Anderson,Nott'm Forest,239.0
-p_totalPasses,2,Lewis Dunk,Brighton,233.0
-p_totalPasses,3,Virgil van Dijk,Liverpool,217.0
-p_totalPasses,4,John Stones,Man City,214.0
-p_totalPasses,5,Granit Xhaka,Sunderland,212.0
-p_totalPasses,6,Murillo,Nott'm Forest,209.0
-p_totalPasses,7,Jan Paul van Hecke,Brighton,208.0
-p_totalPasses,8,Trevoh Chalobah,Chelsea,207.0
-p_totalPasses,9,Micky van de Ven,Tottenham,199.0
-p_totalPasses,10,Moisés Caicedo,Chelsea,196.0
-p_cleanSheets,1,Nick Pope,Newcastle,2.0
-p_cleanSheets,1,Djordje Petrovic,Bournemouth,2.0
-p_cleanSheets,1,Robert Sánchez,Chelsea,2.0
-p_cleanSheets,1,Lucas Perri,Leeds,2.0
-p_cleanSheets,1,Guglielmo Vicario,Tottenham,2.0
-p_cleanSheets,1,Dean Henderson,Crystal Palace,2.0
-p_cleanSheets,1,David Raya,Arsenal,2.0
-p_cleanSheets,8,Marco Bizot,Aston Villa,1.0
-p_cleanSheets,8,Martin Dúbravka,Burnley,1.0
-p_cleanSheets,8,Robin Roefs,Sunderland,1.0
+p_assists,2,El Hadji Malick Diouf,West Ham,3.0
+p_assists,2,João Pedro,Chelsea,3.0
+p_assists,2,Mohammed Kudus,Tottenham,3.0
+p_assists,5,Riccardo Calafiori,Arsenal,2.0
+p_assists,5,Antoine Semenyo,Bournemouth,2.0
+p_assists,5,Jérémy Doku,Man City,2.0
+p_assists,5,Cody Gakpo,Liverpool,2.0
+p_assists,5,Alex Iwobi,Fulham,2.0
+p_assists,5,Mohamed Salah,Liverpool,2.0
+p_totalPasses,1,Elliot Anderson,Nott'm Forest,417.0
+p_totalPasses,2,Virgil van Dijk,Liverpool,389.0
+p_totalPasses,3,Trevoh Chalobah,Chelsea,375.0
+p_totalPasses,4,Tosin Adarabioyo,Chelsea,345.0
+p_totalPasses,5,Joachim Andersen,Fulham,340.0
+p_totalPasses,6,Moisés Caicedo,Chelsea,328.0
+p_totalPasses,7,Micky van de Ven,Tottenham,325.0
+p_totalPasses,8,Cristian Romero,Tottenham,323.0
+p_totalPasses,9,Emmanuel Agbadou,Wolves,314.0
+p_totalPasses,10,Lewis Dunk,Brighton,312.0
+p_cleanSheets,1,Nick Pope,Newcastle,3.0
+p_cleanSheets,1,Guglielmo Vicario,Tottenham,3.0
+p_cleanSheets,1,Dean Henderson,Crystal Palace,3.0
+p_cleanSheets,1,David Raya,Arsenal,3.0
+p_cleanSheets,5,Robin Roefs,Sunderland,2.0
+p_cleanSheets,5,Djordje Petrovic,Bournemouth,2.0
+p_cleanSheets,5,Robert Sánchez,Chelsea,2.0
+p_cleanSheets,5,Lucas Perri,Leeds,2.0
+p_cleanSheets,5,Alisson Becker,Liverpool,2.0
+p_cleanSheets,5,Jordan Pickford,Everton,2.0
