@@ -11,4 +11,4 @@ Extraction.ipynb
 *.parquet
 
 # Extra
-/actual_table_2025_26.csv
+actual_table_2025_26.csv
