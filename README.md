@@ -18,4 +18,4 @@ figure out the relevancy and features
 8) odds.py
 
 Predictions for MD4 -> Liverpool still in 1st
-Best model: 
+Best model: 60% chance of Liverpool winning w/ Arsenal 2nd
